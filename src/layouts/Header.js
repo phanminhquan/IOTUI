@@ -3,16 +3,43 @@ import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import { Box, Stack, AppBar, Toolbar, IconButton } from '@mui/material';
 // utils
-import { bgBlur } from '../../../utils/cssStyles';
+import Iconify from '../components/iconify';
+
 // components
-import Iconify from '../../../components/iconify';
+
+import LanguagePopover from '../components/LanguagePopover';
+import NotificationsPopover from '../components/NotificationsPopover';
+import AccountPopover from '../components/AccountPopover';
+import { bgBlur } from '../utils/cssStyles';
+import Searchbar from '../components/Searchbar';
+
+
 //
-import Searchbar from './Searchbar';
-import AccountPopover from './AccountPopover';
-import LanguagePopover from './LanguagePopover';
-import NotificationsPopover from './NotificationsPopover';
+// import Searchbar from './Searchbar';
+// import AccountPopover from './AccountPopover';
+// import LanguagePopover from './LanguagePopover';
+// import NotificationsPopover from './NotificationsPopover';
+
 
 // ----------------------------------------------------------------------
+
+const LANGS = [
+    {
+      value: 'en',
+      label: 'English',
+      icon: '/assets/icons/ic_flag_en.svg',
+    },
+    {
+      value: 'de',
+      label: 'German',
+      icon: '/assets/icons/ic_flag_de.svg',
+    },
+    {
+      value: 'fr',
+      label: 'French',
+      icon: '/assets/icons/ic_flag_fr.svg',
+    },
+  ];
 
 const NAV_WIDTH = 280;
 
@@ -42,8 +69,11 @@ Header.propTypes = {
   onOpenNav: PropTypes.func,
 };
 
+
+
 export default function Header({ onOpenNav }) {
   return (
+    
     <StyledRoot>
       <StyledToolbar>
         <IconButton
@@ -68,8 +98,7 @@ export default function Header({ onOpenNav }) {
             sm: 1,
           }}
         >
-          <LanguagePopover />
-          <NotificationsPopover />
+          
           <AccountPopover />
         </Stack>
       </StyledToolbar>

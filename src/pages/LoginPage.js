@@ -1,7 +1,17 @@
+import { useContext, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { Form, Navigate, useNavigate } from 'react-router-dom';
+
+
+
 // @mui
 import { styled } from '@mui/material/styles';
-import { Link, Container, Typography, Divider, Stack, Button } from '@mui/material';
+import { Link, Container, Typography, Divider, Stack, Button, IconButton, InputAdornment, TextField, Checkbox } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import cookie from "react-cookies";
+import Apis, { authApi, endpoints } from '../configs/Apis'
+import { MyUserContext } from '../App';
+
 // hooks
 import useResponsive from '../hooks/useResponsive';
 // components
@@ -9,6 +19,10 @@ import Logo from '../components/logo';
 import Iconify from '../components/iconify';
 // sections
 import { LoginForm } from '../sections/auth/login';
+
+
+
+
 
 // ----------------------------------------------------------------------
 
@@ -41,8 +55,40 @@ const StyledContent = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function LoginPage() {
-  const mdUp = useResponsive('up', 'md');
+  const navigate = useNavigate();
 
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClick = () => {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    const process = async () => {
+      try {
+        const res = await Apis.post(endpoints.login, {
+          "email": email,
+          "password": password
+        });
+        cookie.save("token", res.data.jwtToken);
+        const data = await authApi().get(endpoints.current_user);
+        cookie.save("user", data);
+        dispatch({
+          "type": "login",
+          "payload": data.data
+        });
+        console.log(user.name);
+
+      }
+      catch (error) { console.log(error) }
+    }
+    process();
+    // navigate('/dashboard', { replace: true });
+  };
+
+  const mdUp = useResponsive('up', 'md');
+  const [user, dispatch] = useContext(MyUserContext);
+  if (user != null)
+        return <Navigate to="/" />
   return (
     <>
       <Helmet>
@@ -97,8 +143,36 @@ export default function LoginPage() {
                 OR
               </Typography>
             </Divider>
+            <Stack spacing={3}>
+              <TextField id='email' name="email" label="Email address" />
 
-            <LoginForm />
+              <TextField
+                id='password'
+                name="password"
+                label="Password"
+                type={showPassword ? 'text' : 'password'}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                        <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Stack>
+
+            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
+              <Checkbox name="remember" label="Remember me" />
+              <Link variant="subtitle2" underline="hover">
+                Forgot password?
+              </Link>
+            </Stack>
+
+            <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleClick}>
+              Login
+            </LoadingButton>
           </StyledContent>
         </Container>
       </StyledRoot>

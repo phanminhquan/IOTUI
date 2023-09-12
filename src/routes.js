@@ -1,11 +1,14 @@
 import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
-import DashboardLayout from './layouts/dashboard';
-import SimpleLayout from './layouts/simple';
+
+
 //
 import UserPage from './pages/UserPage';
 import LoginPage from './pages/LoginPage';
 import DashboardAppPage from './pages/DashboardAppPage';
+import Detail from './pages/Detail';
+import DashboardLayout from './layouts/DashboardLayout';
+import SimpleLayout from './layouts/SimpleLayout';
 
 // ----------------------------------------------------------------------
 
@@ -15,9 +18,10 @@ export default function Router() {
       path: '/dashboard',
       element: <DashboardLayout />,
       children: [
-        { element: <Navigate to="/dashboard/app" />, index: true },
+        { element: <Navigate to="/login" />, index: true },
         { path: 'app', element: <DashboardAppPage /> },
-        { path: 'user', element: <UserPage /> }
+        { path: 'user', element: <UserPage /> },
+        {path :"tram/:id", element: <Detail/>}
         
       ],
     },

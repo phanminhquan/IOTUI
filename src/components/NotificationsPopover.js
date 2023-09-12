@@ -21,10 +21,12 @@ import {
   ListItemButton,
 } from '@mui/material';
 // utils
-import { fToNow } from '../../../utils/formatTime';
+import { fToNow } from '../utils/formatTime';
 // components
-import Iconify from '../../../components/iconify';
-import Scrollbar from '../../../components/scrollbar';
+
+
+import Iconify from './iconify/Iconify';
+import Scrollbar from './scrollbar/Scrollbar';
 
 // ----------------------------------------------------------------------
 

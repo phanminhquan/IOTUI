@@ -2,9 +2,14 @@ import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
+import Header from './Header';
+import Nav from './Nav';
+
 //
-import Header from './header';
-import Nav from './nav';
+
+
+// import Header from '../Header';
+// import Nav from '../Nav';
 
 // ----------------------------------------------------------------------
 
