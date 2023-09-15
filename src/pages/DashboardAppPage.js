@@ -5,7 +5,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import { Grid, Container, Typography } from '@mui/material';
 
-import { MyUserContext } from '../App';
+import { DataContext, MyUserContext } from '../App';
 // components
 import Iconify from '../components/iconify';
 // sections
@@ -27,6 +27,7 @@ import {
 
 export default function DashboardAppPage() {
   const [user, dispatch] = useContext(MyUserContext);
+  const [data, dispatchData] = useContext(DataContext); 
   const theme = useTheme();
   const navigate = useNavigate();
   const choose = (id) => {
