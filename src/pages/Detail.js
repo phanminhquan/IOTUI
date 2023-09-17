@@ -1,188 +1,347 @@
 
-import { faker } from '@faker-js/faker';
-// @mui
 import { useTheme } from '@mui/material/styles';
-import { Grid, Container, Typography } from '@mui/material';
-// components
+import GaugeComponent from 'react-gauge-component';
+import { Row } from 'react-bootstrap';
+import React, { Component } from 'react';
+import CanvasJSReact from '@canvasjs/react-charts';
 import Iconify from '../components/iconify';
-// sections
-import {
-  AppTasks,
-  AppNewsUpdate,
-  AppOrderTimeline,
-  AppCurrentVisits,
-  AppWebsiteVisits,
-  AppTrafficBySite,
-  AppWidgetSummary,
-  AppCurrentSubject,
-  AppConversionRates,
-} from '../sections/@dashboard/app';
+ 
+const CanvasJS = CanvasJSReact.CanvasJS;
+const CanvasJSChart = CanvasJSReact.CanvasJSChart;
+ 
 
+export default function Detail() {
 
-export default function Detail(){
-    const theme = useTheme();
-    
-    return (<>
-    <Grid item xs={12} md={6} lg={8}>
-            <AppWebsiteVisits
-              title="Website Visits"
-              subheader="(+43%) than last year"
-              chartLabels={[
-                '01/01/2003',
-                '02/01/2003',
-                '03/01/2003',
-                '04/01/2003',
-                '05/01/2003',
-                '06/01/2003',
-                '07/01/2003',
-                '08/01/2003',
-                '09/01/2003',
-                '10/01/2003',
-                '11/01/2003',
-              ]}
-              chartData={[
-                {
-                  name: 'Team A',
-                  type: 'column',
-                  fill: 'solid',
-                  data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
+  const options = {
+    animationEnabled: true,
+    exportEnabled: true,
+    theme: 'dark1', // 'light1', 'dark1', 'dark2'
+    title: {
+      text: 'Giao Động Nhiệt Độ',
+    },
+    axisY: {
+      title: 'Nhiệt độ',
+      suffix: '°C',
+    },
+    axisX: {
+      title: 'Giờ trong ngày',
+      prefix: '',
+      interval: 1,
+    },
+    data: [
+      {
+        type: 'line',
+        toolTipContent: 'Hour {x}: {y}°C',
+        dataPoints: [
+          { x: 1, y: 28 },
+          { x: 2, y: 30 },
+          { x: 3, y: 32 },
+          { x: 4, y: 26 },
+          
+        ],
+      },
+    ],
+  };
+  return (
+    <>
+      <div className="container" style={{backgroundColor: '#2a2a2a'}}>
+        <div className="Row" style={{ display: 'flex'}}>
+        <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` , color:"white"}}> Nhiệt độ
+            <GaugeComponent
+              type="semicircle"
+              style={{ width: `calc(100% / ${1.2})`, height: `calc(100% / ${1.2})`, backgroundColor: '#2a2a2a' }}
+              arc={{
+                width: 0.2,
+                padding: 0.0005,
+                cornerRadius: 1,
+                // gradient: true,
+                subArcs: [
+                  {
+                    limit: 16,
+                    color: '#EA4228',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Nhiệt độ quá thấp',
+                    },
+                    onClick: () => console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'),
+                    onMouseMove: () => console.log('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB'),
+                    onMouseLeave: () => console.log('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC'),
+                  },
+                  {
+                    limit: 25,
+                    color: '#F5CD19',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Nhiệt độ thấp',
+                    },
+                  },
+                  {
+                    limit: 33,
+                    color: '#5BE12C',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Nhiệt độ lý tưởng',
+                    },
+                  },
+                  {
+                    limit: 40,
+                    color: '#F5CD19',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Nhiệt độ cao',
+                    },
+                  },
+                  {
+                    
+                    color: '#EA4228',
+                    tooltip: {
+                      text: 'Nhiệt độ ở mức cảnh báo',
+                    },
+                  },
+                ],
+              }}
+              pointer={{
+                color: '#345243',
+                length: 0.8,
+                width: 15,
+                // elastic: true,
+              }}
+              labels={{
+                valueLabel: { formatTextValue: value => `${value}°C` },
+                tickLabels: {
+                  type: 'outer',
+                  valueConfig: { formatTextValue: value => `${value}°C`, fontSize: 10 },
+                  ticks: [{ value: 0 }, { value: 25 }, { value: 33 }],
                 },
-                {
-                  name: 'Team B',
-                  type: 'area',
-                  fill: 'gradient',
-                  data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
+              }}
+              value={30}
+              minValue={0}
+              maxValue={50}
+            />
+          </div>
+          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` , color:"white"}}> Độ ẩm
+            <GaugeComponent
+              type="semicircle"
+              style={{ width: `calc(100% / ${1.2})`, height: `calc(100% / ${1.2})`, backgroundColor: '#2a2a2a' }}
+              arc={{
+                width: 0.2,
+                padding: 0.0005,
+                cornerRadius: 1,
+                // gradient: true,
+                subArcs: [
+                  {
+                    limit: 0,
+                    color: '#EA4228',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Too low temperature!',
+                    },
+                    onClick: () => console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'),
+                    onMouseMove: () => console.log('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB'),
+                    onMouseLeave: () => console.log('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC'),
+                  },
+                  {
+                    limit: 30,
+                    color: '#F5CD19',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Khá khô',
+                    },
+                  },
+                  {
+                    limit: 60,
+                    color: '#5BE12C',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Mức độ thoải mái',
+                    },
+                  },
+                  {
+                    limit: 100,
+                    color: '#F5CD19',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Khá ẩm',
+                    },
+                  },
+                  {
+                    color: '#EA4228',
+                    tooltip: {
+                      text: 'Too high temperature!',
+                    },
+                  },
+                ],
+              }}
+              pointer={{
+                color: '#345243',
+                length: 0.8,
+                width: 15,
+                // elastic: true,
+              }}
+              labels={{
+                valueLabel: { formatTextValue: value => `${value}% RH` },
+                tickLabels: {
+                  type: 'outer',
+                  valueConfig: { formatTextValue: value => `${value}% RH`, fontSize: 10 },
+                  ticks: [{ value: 0 }, { value: 60 }, { value: 100 }],
                 },
-                {
-                  name: 'Team C',
-                  type: 'line',
-                  fill: 'solid',
-                  data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
+              }}
+              value={50}
+              minValue={0}
+              maxValue={100}
+            />
+          </div>
+          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` , color:"white"}}> Độ bụi
+            <GaugeComponent
+              type="semicircle"
+              style={{ width: `calc(100% / ${1.2})`, height: `calc(100% / ${1.2})`, backgroundColor: '#2a2a2a' }}
+              arc={{
+                width: 0.2,
+                padding: 0.0005,
+                cornerRadius: 1,
+                // gradient: true,
+                subArcs: [
+                  {
+                    limit: 0,
+                    color: '#EA4228',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Too low temperature!',
+                    },
+                    onClick: () => console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'),
+                    onMouseMove: () => console.log('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB'),
+                    onMouseLeave: () => console.log('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC'),
+                  },
+                  {
+                    limit: 6,
+                    color: '#F5CD19',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Độ bụi ở mức lý tưởng',
+                    },
+                  },
+                  {
+                    limit: 12,
+                    color: '#5BE12C',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Độ bụi ở mức an toàn',
+                    },
+                  },
+                  {
+                    limit: 14,
+                    color: '#F5CD19',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Độ bụi ở mức cảnh báo',
+                    },
+                  },
+                  {
+                    color: '#EA4228',
+                    tooltip: {
+                      text: 'Too high temperature!',
+                    },
+                  },
+                ],
+              }}
+              pointer={{
+                color: '#345243',
+                length: 0.8,
+                width: 15,
+                // elastic: true,
+              }}
+              labels={{
+                valueLabel: { formatTextValue: value => `${value}µm` },
+                tickLabels: {
+                  type: 'outer',
+                  valueConfig: { formatTextValue: value => `${value}µm`, fontSize: 10 },
+                  ticks: [{ value: 0 }, { value: 6 }, { value: 14 }],
                 },
-              ]}
+              }}
+              value={4}
+              minValue={0}
+              maxValue={14}
             />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={4}>
-            <AppCurrentVisits
-              title="Current Visits"
-              chartData={[
-                { label: 'America', value: 4344 },
-                { label: 'Asia', value: 5435 },
-                { label: 'Europe', value: 1443 },
-                { label: 'Africa', value: 4443 },
-              ]}
-              chartColors={[
-                theme.palette.primary.main,
-                theme.palette.info.main,
-                theme.palette.warning.main,
-                theme.palette.error.main,
-              ]}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={8}>
-            <AppConversionRates
-              title="Conversion Rates"
-              subheader="(+43%) than last year"
-              chartData={[
-                { label: 'Italy', value: 400 },
-                { label: 'Japan', value: 430 },
-                { label: 'China', value: 448 },
-                { label: 'Canada', value: 470 },
-                { label: 'France', value: 540 },
-                { label: 'Germany', value: 580 },
-                { label: 'South Korea', value: 690 },
-                { label: 'Netherlands', value: 1100 },
-                { label: 'United States', value: 1200 },
-                { label: 'United Kingdom', value: 1380 },
-              ]}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={4}>
-            <AppCurrentSubject
-              title="Current Subject"
-              chartLabels={['English', 'History', 'Physics', 'Geography', 'Chinese', 'Math']}
-              chartData={[
-                { name: 'Series 1', data: [80, 50, 30, 40, 100, 20] },
-                { name: 'Series 2', data: [20, 30, 40, 80, 20, 80] },
-                { name: 'Series 3', data: [44, 76, 78, 13, 43, 10] },
-              ]}
-              chartColors={[...Array(6)].map(() => theme.palette.text.secondary)}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={8}>
-            <AppNewsUpdate
-              title="News Update"
-              list={[...Array(5)].map((_, index) => ({
-                id: faker.datatype.uuid(),
-                title: faker.name.jobTitle(),
-                description: faker.name.jobTitle(),
-                image: `/assets/images/covers/cover_${index + 1}.jpg`,
-                postedAt: faker.date.recent(),
-              }))}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={4}>
-            <AppOrderTimeline
-              title="Order Timeline"
-              list={[...Array(5)].map((_, index) => ({
-                id: faker.datatype.uuid(),
-                title: [
-                  '1983, orders, $4220',
-                  '12 Invoices have been paid',
-                  'Order #37745 from September',
-                  'New order placed #XF-2356',
-                  'New order placed #XF-2346',
-                ][index],
-                type: `order${index + 1}`,
-                time: faker.date.past(),
-              }))}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={4}>
-            <AppTrafficBySite
-              title="Traffic by Site"
-              list={[
-                {
-                  name: 'FaceBook',
-                  value: 323234,
-                  icon: <Iconify icon={'eva:facebook-fill'} color="#1877F2" width={32} />,
+          </div>
+          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` , color:"white"}}> Độ CO2
+            <GaugeComponent
+              type="semicircle"
+              style={{ width: `calc(100% / ${1.2})`, height: `calc(100% / ${1.2})`, backgroundColor: '#2a2a2a' }}
+              arc={{
+                width: 0.2,
+                padding: 0.0005,
+                cornerRadius: 1,
+                // gradient: true,
+                subArcs: [
+                  {
+                    limit: 0,
+                    color: '#EA4228',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Too low temperature!',
+                    },
+                    onClick: () => console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'),
+                    onMouseMove: () => console.log('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB'),
+                    onMouseLeave: () => console.log('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC'),
+                  },
+                  {
+                    limit: 300,
+                    color: '#F5CD19',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Low temperature!',
+                    },
+                  },
+                  {
+                    limit: 400,
+                    color: '#5BE12C',
+                    showTick: true,
+                    tooltip: {
+                      text: 'OK temperature!',
+                    },
+                  },
+                  {
+                    limit: 1000,
+                    color: '#F5CD19',
+                    showTick: true,
+                    tooltip: {
+                      text: 'High temperature!',
+                    },
+                  },
+                  {
+                    color: '#EA4228',
+                    tooltip: {
+                      text: 'Too high temperature!',
+                    },
+                  },
+                ],
+              }}
+              pointer={{
+                color: '#345243',
+                length: 0.8,
+                width: 15,
+                // elastic: true,
+              }}
+              labels={{
+                valueLabel: { formatTextValue: value => `${value}ppm` },
+                tickLabels: {
+                  type: 'outer',
+                  valueConfig: { formatTextValue: value => `${value}ppm`, fontSize: 10 },
+                  ticks: [{ value: 0 }, { value: 500 }, { value: 1000 }],
                 },
-                {
-                  name: 'Google',
-                  value: 341212,
-                  icon: <Iconify icon={'eva:google-fill'} color="#DF3E30" width={32} />,
-                },
-                {
-                  name: 'Linkedin',
-                  value: 411213,
-                  icon: <Iconify icon={'eva:linkedin-fill'} color="#006097" width={32} />,
-                },
-                {
-                  name: 'Twitter',
-                  value: 443232,
-                  icon: <Iconify icon={'eva:twitter-fill'} color="#1C9CEA" width={32} />,
-                },
-              ]}
+              }}
+              value={300}
+              minValue={0}
+              maxValue={2000}
             />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={8}>
-            <AppTasks
-              title="Tasks"
-              list={[
-                { id: '1', label: 'Create FireStone Logo' },
-                { id: '2', label: 'Add SCSS and JS files if required' },
-                { id: '3', label: 'Stakeholder Meeting' },
-                { id: '4', label: 'Scoping & Estimations' },
-                { id: '5', label: 'Sprint Showcase' },
-              ]}
-            />
-          </Grid>
-    </>)
+          </div>
+        </div>
+        <div className='Row'>
+          <div>
+            <CanvasJSChart options = {options}/></div>
+        </div>
+      </div>
+    </>
+  );
 }
+  
