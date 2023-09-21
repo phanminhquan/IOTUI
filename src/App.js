@@ -45,6 +45,9 @@ export default function App() {
       status: "JOIN"
     };
     stompClient.send("/app/message", {}, JSON.stringify(chatMessage));
+    dispatchData({
+      "type": "reset"
+    })
   }
 
 

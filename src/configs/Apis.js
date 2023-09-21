@@ -6,7 +6,8 @@ const SERVER = "http://localhost:9000";
 export const endpoints = {
   login: "/authenticate",
   current_user: "/api/current-user",
-  register: "/sign-up"
+  register: "/sign-up",
+  loaddata: "/api/data"
 
 };
 export const authApi = () => {

@@ -1,23 +1,23 @@
-
 import { useTheme } from '@mui/material/styles';
 import GaugeComponent from 'react-gauge-component';
 import { Row } from 'react-bootstrap';
-import React, { Component } from 'react';
+import React, { Component , useContext}  from 'react';
 import CanvasJSReact from '@canvasjs/react-charts';
+import { DataContext } from '../App';
 import Iconify from '../components/iconify';
- 
+
+
 const CanvasJS = CanvasJSReact.CanvasJS;
 const CanvasJSChart = CanvasJSReact.CanvasJSChart;
- 
 
 export default function Detail() {
-
+  const [data1, dispatchData]= useContext(DataContext);
   const options = {
     animationEnabled: true,
     exportEnabled: true,
     theme: 'dark1', // 'light1', 'dark1', 'dark2'
     title: {
-      text: 'Giao Động Nhiệt Độ',
+      text: '',
     },
     axisY: {
       title: 'Nhiệt độ',
@@ -37,16 +37,52 @@ export default function Detail() {
           { x: 2, y: 30 },
           { x: 3, y: 32 },
           { x: 4, y: 26 },
-          
         ],
       },
     ],
   };
+  const option1 = {
+    theme: 'dark1',
+    animationEnabled: true,
+    exportEnabled: true,
+    title: {
+      text: '',
+    },
+    axisY: {
+      title: 'Nhiệt độ',
+      suffix: ' °C',
+    },
+    axisX: {
+      title: 'Giờ trong ngày',
+      prefix: '',
+      interval: 1,
+    },
+    data: [
+      {
+        type: 'rangeArea',
+        xValueFormatString: '',
+        yValueFormatString: '#0.## °C',
+        toolTipContent: ' <span style="color:#6D78AD">{x}</span><br><b>Min:</b> {y[0]}<br><b>Max:</b> {y[1]}',
+        dataPoints: [
+          { x: 1, y: [37, 55] },
+          { x: 2, y: [37, 57] },
+          { x: 3, y: [43, 63] },
+          { x: 4, y: [46, 68] },
+          { x: 5, y: [55, 75] },
+          { x: 6, y: [63, 84] },
+          { x: 7, y: [66, 90] },
+        ]
+      },
+    ],
+  };
+console.log(data1);
   return (
     <>
-      <div className="container" style={{backgroundColor: '#2a2a2a'}}>
-        <div className="Row" style={{ display: 'flex'}}>
-        <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` , color:"white"}}> Nhiệt độ
+      <div className="container" style={{ backgroundColor: '#2a2a2a' }}>
+        <div className="Row" style={{ display: 'flex' }}>
+          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})`, color: 'white' }}>
+            {' '}
+            Nhiệt độ
             <GaugeComponent
               type="semicircle"
               style={{ width: `calc(100% / ${1.2})`, height: `calc(100% / ${1.2})`, backgroundColor: '#2a2a2a' }}
@@ -92,7 +128,6 @@ export default function Detail() {
                     },
                   },
                   {
-                    
                     color: '#EA4228',
                     tooltip: {
                       text: 'Nhiệt độ ở mức cảnh báo',
@@ -107,10 +142,10 @@ export default function Detail() {
                 // elastic: true,
               }}
               labels={{
-                valueLabel: { formatTextValue: value => `${value}°C` },
+                valueLabel: { formatTextValue: (value) => `${value}°C` },
                 tickLabels: {
                   type: 'outer',
-                  valueConfig: { formatTextValue: value => `${value}°C`, fontSize: 10 },
+                  valueConfig: { formatTextValue: (value) => `${value}°C`, fontSize: 10 },
                   ticks: [{ value: 0 }, { value: 25 }, { value: 33 }],
                 },
               }}
@@ -119,7 +154,9 @@ export default function Detail() {
               maxValue={50}
             />
           </div>
-          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` , color:"white"}}> Độ ẩm
+          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})`, color: 'white' }}>
+            {' '}
+            Độ ẩm
             <GaugeComponent
               type="semicircle"
               style={{ width: `calc(100% / ${1.2})`, height: `calc(100% / ${1.2})`, backgroundColor: '#2a2a2a' }}
@@ -179,10 +216,10 @@ export default function Detail() {
                 // elastic: true,
               }}
               labels={{
-                valueLabel: { formatTextValue: value => `${value}% RH` },
+                valueLabel: { formatTextValue: (value) => `${value}% RH` },
                 tickLabels: {
                   type: 'outer',
-                  valueConfig: { formatTextValue: value => `${value}% RH`, fontSize: 10 },
+                  valueConfig: { formatTextValue: (value) => `${value}% RH`, fontSize: 10 },
                   ticks: [{ value: 0 }, { value: 60 }, { value: 100 }],
                 },
               }}
@@ -191,7 +228,9 @@ export default function Detail() {
               maxValue={100}
             />
           </div>
-          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` , color:"white"}}> Độ bụi
+          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})`, color: 'white' }}>
+            {' '}
+            Độ bụi
             <GaugeComponent
               type="semicircle"
               style={{ width: `calc(100% / ${1.2})`, height: `calc(100% / ${1.2})`, backgroundColor: '#2a2a2a' }}
@@ -251,19 +290,22 @@ export default function Detail() {
                 // elastic: true,
               }}
               labels={{
-                valueLabel: { formatTextValue: value => `${value}µm` },
+                valueLabel: { formatTextValue: (value) => `${value}µm` },
                 tickLabels: {
                   type: 'outer',
-                  valueConfig: { formatTextValue: value => `${value}µm`, fontSize: 10 },
+                  valueConfig: { formatTextValue: (value) => `${value}µm`, fontSize: 10 },
                   ticks: [{ value: 0 }, { value: 6 }, { value: 14 }],
                 },
               }}
-              value={4}
+        
+              value={5}
               minValue={0}
               maxValue={14}
             />
           </div>
-          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` , color:"white"}}> Độ CO2
+          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})`, color: 'white' }}>
+            {' '}
+            Độ CO2
             <GaugeComponent
               type="semicircle"
               style={{ width: `calc(100% / ${1.2})`, height: `calc(100% / ${1.2})`, backgroundColor: '#2a2a2a' }}
@@ -323,10 +365,10 @@ export default function Detail() {
                 // elastic: true,
               }}
               labels={{
-                valueLabel: { formatTextValue: value => `${value}ppm` },
+                valueLabel: { formatTextValue: (value) => `${value}ppm` },
                 tickLabels: {
                   type: 'outer',
-                  valueConfig: { formatTextValue: value => `${value}ppm`, fontSize: 10 },
+                  valueConfig: { formatTextValue: (value) => `${value}ppm`, fontSize: 10 },
                   ticks: [{ value: 0 }, { value: 500 }, { value: 1000 }],
                 },
               }}
@@ -336,12 +378,19 @@ export default function Detail() {
             />
           </div>
         </div>
-        <div className='Row'>
-          <div>
-            <CanvasJSChart options = {options}/></div>
+      </div>
+      <div style={{ width: `calc(100% / ${1})`,height:50, backgroundColor:"#2a2a2a" }}> </div>
+      <div className="container">
+        <div className="Row" style={{ display: 'flex' }}>
+          <div style={{ width: `calc(100% / ${2})` }}>
+            <CanvasJSChart options={options} />
+          </div>
+          <div style={{ width: `calc(100% / ${2})` }}>
+            <CanvasJSChart options={option1} />
+          </div>
         </div>
       </div>
+      
     </>
   );
 }
-  
