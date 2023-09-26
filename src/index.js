@@ -1,12 +1,21 @@
 import ReactDOM from 'react-dom/client';
 
 //
+import { createGlobalState } from 'react-hooks-global-state';
+
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import reportWebVitals from './reportWebVitals';
 
 // ----------------------------------------------------------------------
 
+const {setGlobalState,useGlobalState} = createGlobalState({
+    data :null,
+    isAuthorized : false,
+    message :null,
+    user :null
+})
+export{useGlobalState,setGlobalState}
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(<App />);

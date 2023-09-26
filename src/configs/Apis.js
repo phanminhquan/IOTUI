@@ -7,7 +7,12 @@ export const endpoints = {
   login: "/authenticate",
   current_user: "/api/current-user",
   register: "/sign-up",
-  loaddata: "/api/data"
+  loaddata: "/data",
+  getExpirationDate :"/expirationOfToken",
+  historyOFStation:"/api/history",
+  current_data:"/api/current",
+  allStation:"/api/all-staion"
+  
 
 };
 export const authApi = () => {

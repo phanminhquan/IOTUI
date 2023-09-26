@@ -9,10 +9,12 @@ import DashboardAppPage from './pages/DashboardAppPage';
 import Detail from './pages/Detail';
 import DashboardLayout from './layouts/DashboardLayout';
 import SimpleLayout from './layouts/SimpleLayout';
+import NotFound from './pages/NotFound';
 
 // ----------------------------------------------------------------------
 
-export default function Router() {
+export default function 
+Router() {
   const routes = useRoutes([
     {
       path: '/dashboard',
@@ -21,7 +23,7 @@ export default function Router() {
         { element: <Navigate to="/login" />, index: true },
         { path: 'app', element: <DashboardAppPage /> },
         { path: 'user', element: <UserPage /> },
-        {path :"tram/:id", element: <Detail/>}
+        {path :"info/:id", element: <Detail/>}
         
       ],
     },
@@ -39,6 +41,10 @@ export default function Router() {
       path: '*',
       element: <Navigate to="/404" replace />,
     },
+    {
+      path: '/404',
+      element: <NotFound />,
+    }
   ]);
 
   return routes;

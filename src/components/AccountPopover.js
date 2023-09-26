@@ -5,7 +5,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 // @mui
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material';
-import { DataContext, MyUserContext } from '../App';
+import { MyUserContext } from '../App';
 import account from '../_mock/account';
 
 // mocks_
@@ -33,14 +33,12 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const [user, dispatch] = useContext(MyUserContext); 
-
-  const [data, dispatchData] = useContext(DataContext); 
   const [open, setOpen] = useState(null);
   const navigate = useNavigate();
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
-    console.log(data)
+
   };
 
   const handleClose = () => {

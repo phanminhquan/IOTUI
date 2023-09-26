@@ -1,14 +1,16 @@
-import { useContext, useState } from 'react';
+import { useContext, useState,useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Form, Navigate, useNavigate } from 'react-router-dom';
-
-
 
 // @mui
 import { styled } from '@mui/material/styles';
 import { Link, Container, Typography, Divider, Stack, Button, IconButton, InputAdornment, TextField, Checkbox } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import cookie from "react-cookies";
+import popupS from 'popups';
+import Popup from 'reactjs-popup';
+
+import { setGlobalState } from '..';
 import Apis, { authApi, endpoints } from '../configs/Apis'
 import { MyUserContext } from '../App';
 
@@ -19,6 +21,10 @@ import Logo from '../components/logo';
 import Iconify from '../components/iconify';
 // sections
 import { LoginForm } from '../sections/auth/login';
+
+
+
+
 
 
 
@@ -56,39 +62,54 @@ const StyledContent = styled('div')(({ theme }) => ({
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  document.body.classList.add("active-modal")
 
   const [showPassword, setShowPassword] = useState(false);
 
+
+  useEffect(() => {
+    cookie.save("user","");
+    cookie.save("token","")
+   },[])
   const handleClick = () => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
-
     const process = async () => {
       try {
         const res = await Apis.post(endpoints.login, {
           "email": email,
           "password": password
-        });
+        }); 
         cookie.save("token", res.data.jwtToken);
+        console.log(res.status)
+        if(res.status === 200){
+          setGlobalState("isAuthorized",true)
+        }
+      
         const data = await authApi().get(endpoints.current_user);
+        const expirationOfToken = await Apis.get(`${endpoints.getExpirationDate}/${res.data.jwtToken}`)
+        cookie.save("expiration", expirationOfToken.data);
         cookie.save("user", data);
+        setGlobalState("user",data);
         dispatch({
           "type": "login",
           "payload": data.data
         });
-        console.log(user.name);
-
+        
+        
       }
-      catch (error) { console.log(error) }
+
+      catch (error) { alert("Tài khoản hoặc mật khẩu không khả dụng") }
     }
     process();
     // navigate('/dashboard', { replace: true });
   };
 
+
   const mdUp = useResponsive('up', 'md');
   const [user, dispatch] = useContext(MyUserContext);
   if (user != null)
-        return <Navigate to="/" />
+    return <Navigate to="/" />
   return (
     <>
       <Helmet>

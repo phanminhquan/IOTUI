@@ -1,48 +1,119 @@
+import cookie from "react-cookies";
 import { useTheme } from '@mui/material/styles';
 import GaugeComponent from 'react-gauge-component';
 import { Row } from 'react-bootstrap';
-import React, { Component , useContext}  from 'react';
+import React, { Component, useContext, useEffect, useState } from 'react';
 import CanvasJSReact from '@canvasjs/react-charts';
-import { DataContext } from '../App';
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { format } from "date-fns";
+import { toInteger } from "lodash";
 import Iconify from '../components/iconify';
+import { setGlobalState, useGlobalState } from "..";
+import Expired from "./Expired";
+import Apis, { endpoints } from "../configs/Apis";
+import { MyUserContext } from "../App";
+
+
+
+
+
+
 
 
 const CanvasJS = CanvasJSReact.CanvasJS;
 const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 export default function Detail() {
-  const [data1, dispatchData]= useContext(DataContext);
+
+  const [user, dispatch] = useContext(MyUserContext);
+
+  const path = useParams();
+  const [data, setData] = useState();
+  const [dataCo, setDataCo] = useState([]);
+  const listener = useGlobalState("message")[0];
+  useEffect(() => {
+    const loaddata = async () => {
+      const res = await Apis.get(`${endpoints.current_data}/${path.id}`, {
+        headers: {
+          Authorization: `Bearer ${cookie.load("token")}`,
+        },
+      }
+      )
+      if (res.data === '') {
+        setGlobalState("isAuthorized", false)
+      }
+      else {
+        setData(res.data);
+      }
+    }
+
+    const dataHistory = async () => {
+      const res = await Apis.get(`${endpoints.historyOFStation}/${path.id}`, {
+        headers: {
+          Authorization: `Bearer ${cookie.load("token")}`,
+        },
+      })
+      if (res.data === '') {
+        setGlobalState("isAuthorized", false)
+      }
+      else {
+        const responese = []
+        res.data.forEach(element => {
+          responese.push({ x: new Date(toInteger(element.dt)*1000), y: element.component.co })
+        });
+        setDataCo(responese)
+
+      }
+    }
+    loaddata();
+    dataHistory();
+
+  }, [listener]);
+  console.log(dataCo)
   const options = {
     animationEnabled: true,
-    exportEnabled: true,
-    theme: 'dark1', // 'light1', 'dark1', 'dark2'
+    theme: "light2",
     title: {
-      text: '',
-    },
-    axisY: {
-      title: 'Nhiệt độ',
-      suffix: '°C',
+      text: "Dữ liệu CO trong 1 giờ qua"
     },
     axisX: {
-      title: 'Giờ trong ngày',
-      prefix: '',
-      interval: 1,
+      valueFormatString: "DD/MM/YYYY HH:mm:ss",
+      crosshair: {
+        enabled: true,
+        snapToDataPoint: true
+      }
+    },
+    axisY: {
+      title: "µg/m³",
+      includeZero: true,
+      crosshair: {
+        enabled: true
+      }
+    },
+    toolTip: {
+      shared: true
+    },
+    legend: {
+      cursor: "pointer",
+      verticalAlign: "bottom",
+      horizontalAlign: "left",
+      dockInsidePlotArea: true,
+
     },
     data: [
       {
-        type: 'line',
-        toolTipContent: 'Hour {x}: {y}°C',
-        dataPoints: [
-          { x: 1, y: 28 },
-          { x: 2, y: 30 },
-          { x: 3, y: 32 },
-          { x: 4, y: 26 },
-        ],
+        type: "line",
+        showInLegend: true,
+        name: "CO",
+        markerType: "square",
+        xValueFormatString: "DD/MM/YYYY HH:mm:ss",
+        color: "#F08080",
+        dataPoints: dataCo,
       },
     ],
   };
   const option1 = {
-    theme: 'dark1',
+    theme: 'light1',
     animationEnabled: true,
     exportEnabled: true,
     title: {
@@ -75,165 +146,96 @@ export default function Detail() {
       },
     ],
   };
-console.log(data1);
+  const isAuthorized = useGlobalState("isAuthorized")[0]
+  if (isAuthorized === false || data == null || user == null) {
+    return (<>
+      <Expired />
+    </>)
+  }
   return (
     <>
-      <div className="container" style={{ backgroundColor: '#2a2a2a' }}>
+      <div className="container">
         <div className="Row" style={{ display: 'flex' }}>
-          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})`, color: 'white' }}>
+          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` }}>
             {' '}
-            Nhiệt độ
+            CO (carbon monoxide)
             <GaugeComponent
               type="semicircle"
-              style={{ width: `calc(100% / ${1.2})`, height: `calc(100% / ${1.2})`, backgroundColor: '#2a2a2a' }}
+              style={{ width: `calc(100% / ${1.2})`, height: `calc(100% / ${1.2})` }}
               arc={{
                 width: 0.2,
                 padding: 0.0005,
                 cornerRadius: 1,
                 // gradient: true,
                 subArcs: [
-                  {
-                    limit: 16,
-                    color: '#EA4228',
-                    showTick: true,
-                    tooltip: {
-                      text: 'Nhiệt độ quá thấp',
-                    },
-                    onClick: () => console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'),
-                    onMouseMove: () => console.log('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB'),
-                    onMouseLeave: () => console.log('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC'),
-                  },
-                  {
-                    limit: 25,
-                    color: '#F5CD19',
-                    showTick: true,
-                    tooltip: {
-                      text: 'Nhiệt độ thấp',
-                    },
-                  },
-                  {
-                    limit: 33,
-                    color: '#5BE12C',
-                    showTick: true,
-                    tooltip: {
-                      text: 'Nhiệt độ lý tưởng',
-                    },
-                  },
                   {
                     limit: 40,
                     color: '#F5CD19',
                     showTick: true,
                     tooltip: {
-                      text: 'Nhiệt độ cao',
+                      text: 'Nồng độ an toàn',
                     },
                   },
                   {
-                    color: '#EA4228',
-                    tooltip: {
-                      text: 'Nhiệt độ ở mức cảnh báo',
-                    },
-                  },
-                ],
-              }}
-              pointer={{
-                color: '#345243',
-                length: 0.8,
-                width: 15,
-                // elastic: true,
-              }}
-              labels={{
-                valueLabel: { formatTextValue: (value) => `${value}°C` },
-                tickLabels: {
-                  type: 'outer',
-                  valueConfig: { formatTextValue: (value) => `${value}°C`, fontSize: 10 },
-                  ticks: [{ value: 0 }, { value: 25 }, { value: 33 }],
-                },
-              }}
-              value={30}
-              minValue={0}
-              maxValue={50}
-            />
-          </div>
-          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})`, color: 'white' }}>
-            {' '}
-            Độ ẩm
-            <GaugeComponent
-              type="semicircle"
-              style={{ width: `calc(100% / ${1.2})`, height: `calc(100% / ${1.2})`, backgroundColor: '#2a2a2a' }}
-              arc={{
-                width: 0.2,
-                padding: 0.0005,
-                cornerRadius: 1,
-                // gradient: true,
-                subArcs: [
-                  {
-                    limit: 0,
-                    color: '#EA4228',
-                    showTick: true,
-                    tooltip: {
-                      text: 'Too low temperature!',
-                    },
-                    onClick: () => console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'),
-                    onMouseMove: () => console.log('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB'),
-                    onMouseLeave: () => console.log('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC'),
-                  },
-                  {
-                    limit: 30,
-                    color: '#F5CD19',
-                    showTick: true,
-                    tooltip: {
-                      text: 'Khá khô',
-                    },
-                  },
-                  {
-                    limit: 60,
+                    limit: 80,
                     color: '#5BE12C',
                     showTick: true,
                     tooltip: {
-                      text: 'Mức độ thoải mái',
+                      text: 'Nồng độ tối đa cho phép ngắn hạn',
                     },
                   },
                   {
-                    limit: 100,
+                    limit: 916,
                     color: '#F5CD19',
                     showTick: true,
                     tooltip: {
-                      text: 'Khá ẩm',
+                      text: 'Ngưỡng độc tính',
                     },
                   },
                   {
                     color: '#EA4228',
                     tooltip: {
-                      text: 'Too high temperature!',
+                      text: 'Ngưỡng gây tử vong',
                     },
                   },
                 ],
               }}
               pointer={{
-                color: '#345243',
+                color: '#E0E0E0',
                 length: 0.8,
                 width: 15,
                 // elastic: true,
               }}
               labels={{
-                valueLabel: { formatTextValue: (value) => `${value}% RH` },
+                valueLabel: {
+                  formatTextValue: (value) => `${value}µg/m³`,
+                  style: {
+                    fill: `#000000`,
+                  },
+                },
                 tickLabels: {
                   type: 'outer',
-                  valueConfig: { formatTextValue: (value) => `${value}% RH`, fontSize: 10 },
-                  ticks: [{ value: 0 }, { value: 60 }, { value: 100 }],
+                  defaultTickValueConfig: {
+                    formatTextValue: (value) => `${value}`,
+                    style: {
+                      fill: `#000000`,
+                      textShadow: ``,
+                    },
+                  },
+                  ticks: [{ value: 0 }],
                 },
               }}
-              value={50}
+              value={data.component.co}
               minValue={0}
-              maxValue={100}
+              maxValue={1000}
             />
           </div>
-          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})`, color: 'white' }}>
+          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` }}>
             {' '}
-            Độ bụi
+            NO (nitrogen monoxide)
             <GaugeComponent
               type="semicircle"
-              style={{ width: `calc(100% / ${1.2})`, height: `calc(100% / ${1.2})`, backgroundColor: '#2a2a2a' }}
+              style={{ width: `calc(100% / ${1.2})`, height: `calc(100% / ${1.2})` }}
               arc={{
                 width: 0.2,
                 padding: 0.0005,
@@ -241,74 +243,343 @@ console.log(data1);
                 // gradient: true,
                 subArcs: [
                   {
-                    limit: 0,
-                    color: '#EA4228',
+                    limit: 1.145,
+                    color: '#5BE12C',
                     showTick: true,
                     tooltip: {
-                      text: 'Too low temperature!',
+                      text: 'Nồng độ an toàn',
                     },
-                    onClick: () => console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'),
-                    onMouseMove: () => console.log('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB'),
-                    onMouseLeave: () => console.log('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC'),
                   },
                   {
-                    limit: 6,
+                    limit: 2,
                     color: '#F5CD19',
                     showTick: true,
                     tooltip: {
-                      text: 'Độ bụi ở mức lý tưởng',
+                      text: 'Nồng độ hơi cao',
                     },
                   },
+                  {
+                    color: '#EA4228',
+                    tooltip: {
+                      text: 'Nồng độ gây độc tính',
+                    },
+                  },
+                ],
+              }}
+              pointer={{
+                color: '#E0E0E0',
+                length: 0.8,
+                width: 15,
+                // elastic: true,
+              }}
+              labels={{
+                valueLabel: {
+                  formatTextValue: (value) => `${value}µg/m³`,
+                  style: {
+                    fill: `#000000`,
+                  },
+                },
+                tickLabels: {
+                  type: 'outer',
+                  defaultTickValueConfig: {
+                    formatTextValue: (value) => `${value}`,
+                    style: {
+                      fill: `#000000`,
+                      textShadow: ``,
+                    },
+                  },
+                  ticks: [{ value: 0 }],
+                },
+              }}
+              value={data.component.no}
+              minValue={0}
+              maxValue={3}
+            />
+          </div>
+          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` }}>
+            {' '}
+            NO2 (nitrogen dioxide)
+            <GaugeComponent
+              type="semicircle"
+              style={{ width: `calc(100% / ${1.2})`, height: `calc(100% / ${1.2})` }}
+              arc={{
+                width: 0.2,
+                padding: 0.0005,
+                cornerRadius: 1,
+                // gradient: true,
+                subArcs: [
+                  {
+                    limit: 0.2,
+                    color: '#5BE12C',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Nồng độ an toàn',
+                    },
+                  },
+                  {
+                    limit: 2.5,
+                    color: '#F5CD19',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Nồng độ cao',
+                    },
+                  },
+                  {
+                    color: '#EA4228',
+                    tooltip: {
+                      text: 'Nồng độ gây độc tính',
+                    },
+                  },
+                ],
+              }}
+              pointer={{
+                color: '#E0E0E0',
+                length: 0.8,
+                width: 15,
+                // elastic: true,
+              }}
+              labels={{
+                valueLabel: {
+                  formatTextValue: (value) => `${value}µg/m³`,
+                  style: {
+                    fill: `#000000`,
+                  },
+                },
+                tickLabels: {
+                  type: 'outer',
+                  defaultTickValueConfig: {
+                    formatTextValue: (value) => `${value}`,
+                    style: {
+                      fill: `#000000`,
+                      textShadow: ``,
+                    },
+                  },
+                  ticks: [{ value: 0 }],
+                },
+              }}
+              value={data.component.no2}
+              minValue={0}
+              maxValue={3}
+            />
+          </div>
+          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` }}>
+            {' '}
+            O3 (ozone)
+            <GaugeComponent
+              type="semicircle"
+              style={{ width: `calc(100% / ${1.2})`, height: `calc(100% / ${1.2})` }}
+              arc={{
+                width: 0.2,
+                padding: 0.0005,
+                cornerRadius: 1,
+                // gradient: true,
+                subArcs: [
+                  {
+                    limit: 100,
+                    color: '#5BE12C',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Nồng độ an toàn',
+                    },
+                  },
+                  {
+                    limit: 150,
+                    color: '#F5CD19',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Nồng độ cao',
+                    },
+                  },
+                  {
+                    color: '#EA4228',
+                    tooltip: {
+                      text: 'Nồng độ gây độc tính',
+                    },
+                  },
+                ],
+              }}
+              pointer={{
+                color: '#E0E0E0',
+                length: 0.8,
+                width: 15,
+                // elastic: true,
+              }}
+              labels={{
+                valueLabel: {
+                  formatTextValue: (value) => `${value}µg/m³`,
+                  style: {
+                    fill: `#000000`,
+                  },
+                },
+                tickLabels: {
+                  type: 'outer',
+                  defaultTickValueConfig: {
+                    formatTextValue: (value) => `${value}`,
+                    style: {
+                      fill: `#000000`,
+                      textShadow: ``,
+                    },
+                  },
+                  ticks: [{ value: 0 }],
+                },
+              }}
+              value={data.component.o3}
+              minValue={0}
+              maxValue={200}
+            />
+          </div>
+        </div>
+      </div>
+      <div style={{ width: `calc(100% / ${1})`, height: 50 }}> </div>
+      <div className="container">
+        <div className="Row" style={{ display: 'flex' }}>
+          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` }}>
+            {' '}
+            SO2 (sulphur dioxide)
+            <GaugeComponent
+              type="semicircle"
+              style={{ width: `calc(100% / ${1.2})`, height: `calc(100% / ${1.2})` }}
+              arc={{
+                width: 0.2,
+                padding: 0.0005,
+                cornerRadius: 1,
+                // gradient: true,
+                subArcs: [
+                  {
+                    limit: 0.2,
+                    color: '#5BE12C',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Nồng độ an toàn',
+                    },
+                  },
+                  {
+                    limit: 2.5,
+                    color: '#F5CD19',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Nồng độ cao',
+                    },
+                  },
+                  {
+                    color: '#EA4228',
+                    tooltip: {
+                      text: 'Nồng độ gây độc tính',
+                    },
+                  },
+                ],
+              }}
+              pointer={{
+                color: '#E0E0E0',
+                length: 0.8,
+                width: 15,
+                // elastic: true,
+              }}
+              labels={{
+                valueLabel: {
+                  formatTextValue: (value) => `${value}µg/m³`,
+                  style: {
+                    fill: `#000000`,
+                  },
+                },
+                tickLabels: {
+                  type: 'outer',
+                  defaultTickValueConfig: {
+                    formatTextValue: (value) => `${value}`,
+                    style: {
+                      fill: `#000000`,
+                      textShadow: ``,
+                    },
+                  },
+                  ticks: [{ value: 0 }],
+                },
+              }}
+              value={data.component.so2}
+              minValue={0}
+              maxValue={3}
+            />
+          </div>
+          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` }}>
+            {' '}
+            PM2.5 (Fine particles matter)
+            <GaugeComponent
+              type="semicircle"
+              style={{ width: `calc(100% / ${1.2})`, height: `calc(100% / ${1.2})` }}
+              arc={{
+                width: 0.2,
+                padding: 0.0005,
+                cornerRadius: 1,
+                // gradient: true,
+                subArcs: [
                   {
                     limit: 12,
                     color: '#5BE12C',
                     showTick: true,
                     tooltip: {
-                      text: 'Độ bụi ở mức an toàn',
+                      text: 'Nồng độ an toàn',
                     },
                   },
                   {
-                    limit: 14,
+                    limit: 35,
                     color: '#F5CD19',
                     showTick: true,
                     tooltip: {
-                      text: 'Độ bụi ở mức cảnh báo',
+                      text: 'Nồng độ vừa',
+                    },
+                  },
+                  {
+                    limit: 55,
+                    color: '#F5CD19',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Nồng độ cao',
                     },
                   },
                   {
                     color: '#EA4228',
                     tooltip: {
-                      text: 'Too high temperature!',
+                      text: 'Nồng độ rất cao',
                     },
                   },
                 ],
               }}
               pointer={{
-                color: '#345243',
+                color: '#E0E0E0',
                 length: 0.8,
                 width: 15,
                 // elastic: true,
               }}
               labels={{
-                valueLabel: { formatTextValue: (value) => `${value}µm` },
+                valueLabel: {
+                  formatTextValue: (value) => `${value}µg/m³`,
+                  style: {
+                    fill: `#000000`,
+                  },
+                },
                 tickLabels: {
                   type: 'outer',
-                  valueConfig: { formatTextValue: (value) => `${value}µm`, fontSize: 10 },
-                  ticks: [{ value: 0 }, { value: 6 }, { value: 14 }],
+                  defaultTickValueConfig: {
+                    formatTextValue: (value) => `${value}`,
+                    style: {
+                      fill: `#000000`,
+                      textShadow: ``,
+                    },
+                  },
+                  ticks: [{ value: 0 }],
                 },
               }}
-        
-              value={5}
+              value={data.component.pm2_5}
               minValue={0}
-              maxValue={14}
+              maxValue={70}
             />
           </div>
-          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})`, color: 'white' }}>
+          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` }}>
             {' '}
-            Độ CO2
+            PM10 (coarse particulate matter)
             <GaugeComponent
               type="semicircle"
-              style={{ width: `calc(100% / ${1.2})`, height: `calc(100% / ${1.2})`, backgroundColor: '#2a2a2a' }}
+              className="abc"
+              style={{ width: `calc(100% / ${1.2})`, height: `calc(100% / ${1.2})`, color: `#CCCCCC` }}
               arc={{
                 width: 0.2,
                 padding: 0.0005,
@@ -316,70 +587,144 @@ console.log(data1);
                 // gradient: true,
                 subArcs: [
                   {
-                    limit: 0,
-                    color: '#EA4228',
-                    showTick: true,
-                    tooltip: {
-                      text: 'Too low temperature!',
-                    },
-                    onClick: () => console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'),
-                    onMouseMove: () => console.log('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB'),
-                    onMouseLeave: () => console.log('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC'),
-                  },
-                  {
-                    limit: 300,
-                    color: '#F5CD19',
-                    showTick: true,
-                    tooltip: {
-                      text: 'Low temperature!',
-                    },
-                  },
-                  {
-                    limit: 400,
+                    limit: 50,
                     color: '#5BE12C',
                     showTick: true,
                     tooltip: {
-                      text: 'OK temperature!',
+                      text: 'Nồng độ an toàn',
                     },
                   },
                   {
-                    limit: 1000,
+                    limit: 150,
                     color: '#F5CD19',
                     showTick: true,
                     tooltip: {
-                      text: 'High temperature!',
+                      text: 'Nồng độ vừa',
+                    },
+                  },
+                  {
+                    limit: 250,
+                    color: '#F5CD19',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Nồng độ cao',
                     },
                   },
                   {
                     color: '#EA4228',
                     tooltip: {
-                      text: 'Too high temperature!',
+                      text: 'Nồng độ rất cao',
                     },
                   },
                 ],
               }}
               pointer={{
-                color: '#345243',
+                color: '#E0E0E0',
                 length: 0.8,
                 width: 15,
                 // elastic: true,
               }}
               labels={{
-                valueLabel: { formatTextValue: (value) => `${value}ppm` },
+                valueLabel: {
+                  formatTextValue: (value) => `${value}µg/m³`,
+                  style: {
+                    fill: `#000000`,
+                  },
+                },
                 tickLabels: {
                   type: 'outer',
-                  valueConfig: { formatTextValue: (value) => `${value}ppm`, fontSize: 10 },
-                  ticks: [{ value: 0 }, { value: 500 }, { value: 1000 }],
+                  defaultTickValueConfig: {
+                    formatTextValue: (value) => `${value}`,
+                    style: {
+                      fill: `#000000`,
+                      textShadow: ``,
+                    },
+                  },
+                  ticks: [{ value: 0 }],
                 },
               }}
-              value={300}
+              value={data.component.pm10}
               minValue={0}
-              maxValue={2000}
+              maxValue={300}
+            />
+          </div>
+          <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` }}>
+            {' '}
+            NH3 (ammonia)
+            <GaugeComponent
+              type="semicircle"
+              style={{ width: `calc(100% / ${1.2})`, height: `calc(100% / ${1.2})` }}
+              arc={{
+                width: 0.2,
+                padding: 0.0005,
+                cornerRadius: 1,
+                // gradient: true,
+                subArcs: [
+                  {
+                    limit: 0.25,
+                    color: '#5BE12C',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Nồng độ an toàn',
+                    },
+                  },
+                  {
+                    limit: 0.5,
+                    color: '#F5CD19',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Nồng độ vừa',
+                    },
+                  },
+                  {
+                    limit: 1,
+                    color: '#F5CD19',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Nồng độ cao',
+                    },
+                  },
+                  {
+                    color: '#EA4228',
+                    tooltip: {
+                      text: 'Nồng độ rất cao',
+                    },
+                  },
+                ],
+              }}
+              pointer={{
+                color: '#E0E0E0',
+                length: 0.8,
+                width: 15,
+                // elastic: true,
+              }}
+              labels={{
+                valueLabel: {
+                  formatTextValue: (value) => `${value}µg/m³`,
+                  style: {
+                    fill: `#000000`,
+                  },
+                },
+                tickLabels: {
+                  type: 'outer',
+                  defaultTickValueConfig: {
+                    formatTextValue: (value) => `${value}`,
+                    style: {
+                      fill: `#000000`,
+                      textShadow: ``,
+                    },
+                  },
+                  ticks: [{ value: 0 }],
+                },
+              }}
+              value={data.component.nh3}
+              minValue={0}
+              maxValue={1.5}
             />
           </div>
         </div>
       </div>
-      <div style={{ width: `calc(100% / ${1})`,height:50, backgroundColor:"#2a2a2a" }}> </div>
+      <div style={{ width: `calc(100% / ${1})`, height: 50 }}> </div>
       <div className="container">
         <div className="Row" style={{ display: 'flex' }}>
           <div style={{ width: `calc(100% / ${2})` }}>
@@ -390,7 +735,6 @@ console.log(data1);
           </div>
         </div>
       </div>
-      
     </>
   );
 }

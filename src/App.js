@@ -1,4 +1,4 @@
-import React, { createContext, useReducer } from 'react';
+import React, { createContext, useEffect, useReducer } from 'react';
 import cookie from "react-cookies";
 import { BrowserRouter, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
@@ -6,6 +6,7 @@ import SockJS from 'sockjs-client';
 import { over } from 'stompjs';
 // routes
 // import { over } from 'stompjs'
+import { setGlobalState, useGlobalState } from './index';
 import Router from './routes';
 // theme
 import ThemeProvider from './theme';
@@ -13,7 +14,8 @@ import ThemeProvider from './theme';
 import { StyledChart } from './components/chart';
 import ScrollToTop from './components/scroll-to-top';
 import MyUserReducer from './produces/MyUserReducer';
-import DataReducer from './produces/DataReducer';
+import Apis, { endpoints } from './configs/Apis';
+
 
 
 
@@ -21,19 +23,15 @@ import DataReducer from './produces/DataReducer';
 // ----------------------------------------------------------------------
 
 export const MyUserContext = createContext();
-export const DataContext = createContext();
 
 export default function App() {
   let stompClient = null;
   const [user, dispatch] = useReducer(MyUserReducer, cookie.load("user") || null);
-  const [data, dispatchData] = useReducer(DataReducer, null);
 
+  const expiration = cookie.load("expiration")
   const onPrivateMessage = (payload) => {
     const payloadData = JSON.parse(payload.body);
-    console.log(payloadData);
-    dispatchData({
-      "type": "reset"
-    })
+    setGlobalState("message", payloadData.date)
   }
   const onError = (err) => {
     console.log(err);
@@ -45,9 +43,6 @@ export default function App() {
       status: "JOIN"
     };
     stompClient.send("/app/message", {}, JSON.stringify(chatMessage));
-    dispatchData({
-      "type": "reset"
-    })
   }
 
 
@@ -58,20 +53,24 @@ export default function App() {
       stompClient.subscribe('/user/client/private', onPrivateMessage);
       userJoin();
     }, onError)
+    dispatch({
+      "type": "logout"
+    })
   }, []);
+
+
   return (
     <MyUserContext.Provider value={[user, dispatch]}>
-      <DataContext.Provider value={[data, dispatchData]}>
-        <HelmetProvider>
-          <BrowserRouter>
-            <ThemeProvider>
-              <ScrollToTop />
-              <StyledChart />
-              <Router />
-            </ThemeProvider>
-          </BrowserRouter>
-        </HelmetProvider>
-      </DataContext.Provider>
+      <HelmetProvider>
+        <BrowserRouter>
+          <ThemeProvider>
+            <ScrollToTop />
+            <StyledChart />
+            <Router />
+          </ThemeProvider>
+        </BrowserRouter>
+      </HelmetProvider>
+
     </MyUserContext.Provider>
   );
 }
