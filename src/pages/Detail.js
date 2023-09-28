@@ -58,10 +58,14 @@ export default function Detail() {
       }
       else {
         const responese = []
+
+        const data2 =[]
         res.data.forEach(element => {
           responese.push({ x: new Date(toInteger(element.dt)*1000), y: element.component.co })
         });
         setDataCo(responese)
+
+
 
       }
     }
@@ -69,7 +73,6 @@ export default function Detail() {
     dataHistory();
 
   }, [listener]);
-  console.log(dataCo)
   const options = {
     animationEnabled: true,
     theme: "light2",
@@ -155,6 +158,7 @@ export default function Detail() {
   return (
     <>
       <div className="container">
+        
         <div className="Row" style={{ display: 'flex' }}>
           <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` }}>
             {' '}
@@ -169,23 +173,23 @@ export default function Detail() {
                 // gradient: true,
                 subArcs: [
                   {
-                    limit: 40,
-                    color: '#F5CD19',
+                    limit: 1000,
+                    color: '#5BE12C',
                     showTick: true,
                     tooltip: {
                       text: 'Nồng độ an toàn',
                     },
                   },
                   {
-                    limit: 80,
-                    color: '#5BE12C',
+                    limit: 2000,
+                    color: '#b9dd2d',
                     showTick: true,
                     tooltip: {
-                      text: 'Nồng độ tối đa cho phép ngắn hạn',
+                      text: 'Nồng độ chấp nhận',
                     },
                   },
                   {
-                    limit: 916,
+                    limit: 10000,
                     color: '#F5CD19',
                     showTick: true,
                     tooltip: {
@@ -227,7 +231,7 @@ export default function Detail() {
               }}
               value={data.component.co}
               minValue={0}
-              maxValue={1000}
+              maxValue={20000}
             />
           </div>
           <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` }}>
@@ -309,7 +313,7 @@ export default function Detail() {
                 // gradient: true,
                 subArcs: [
                   {
-                    limit: 0.2,
+                    limit: 40,
                     color: '#5BE12C',
                     showTick: true,
                     tooltip: {
@@ -317,7 +321,15 @@ export default function Detail() {
                     },
                   },
                   {
-                    limit: 2.5,
+                    limit: 80,
+                    color: '#b9dd2d',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Nồng độ tốt',
+                    },
+                  },
+                  {
+                    limit: 180,
                     color: '#F5CD19',
                     showTick: true,
                     tooltip: {
@@ -359,7 +371,7 @@ export default function Detail() {
               }}
               value={data.component.no2}
               minValue={0}
-              maxValue={3}
+              maxValue={280}
             />
           </div>
           <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` }}>
@@ -375,11 +387,19 @@ export default function Detail() {
                 // gradient: true,
                 subArcs: [
                   {
-                    limit: 100,
+                    limit:50,
                     color: '#5BE12C',
                     showTick: true,
                     tooltip: {
                       text: 'Nồng độ an toàn',
+                    },
+                  },
+                  {
+                    limit: 100,
+                    color: '#b9dd2d',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Nồng độ tốt',
                     },
                   },
                   {
@@ -446,7 +466,7 @@ export default function Detail() {
                 // gradient: true,
                 subArcs: [
                   {
-                    limit: 0.2,
+                    limit: 40,
                     color: '#5BE12C',
                     showTick: true,
                     tooltip: {
@@ -454,7 +474,15 @@ export default function Detail() {
                     },
                   },
                   {
-                    limit: 2.5,
+                    limit: 80,
+                    color: '#b9dd2d',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Nồng độ tốt',
+                    },
+                  },
+                  {
+                    limit: 380,
                     color: '#F5CD19',
                     showTick: true,
                     tooltip: {
@@ -496,7 +524,7 @@ export default function Detail() {
               }}
               value={data.component.so2}
               minValue={0}
-              maxValue={3}
+              maxValue={800}
             />
           </div>
           <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` }}>
@@ -512,7 +540,7 @@ export default function Detail() {
                 // gradient: true,
                 subArcs: [
                   {
-                    limit: 12,
+                    limit: 30,
                     color: '#5BE12C',
                     showTick: true,
                     tooltip: {
@@ -520,19 +548,19 @@ export default function Detail() {
                     },
                   },
                   {
-                    limit: 35,
+                    limit: 60,
+                    color: '#b9dd2d',
+                    showTick: true,
+                    tooltip: {
+                      text: 'Nồng độ tốt',
+                    },
+                  },
+                  {
+                    limit: 90,
                     color: '#F5CD19',
                     showTick: true,
                     tooltip: {
                       text: 'Nồng độ vừa',
-                    },
-                  },
-                  {
-                    limit: 55,
-                    color: '#F5CD19',
-                    showTick: true,
-                    tooltip: {
-                      text: 'Nồng độ cao',
                     },
                   },
                   {
@@ -570,7 +598,7 @@ export default function Detail() {
               }}
               value={data.component.pm2_5}
               minValue={0}
-              maxValue={70}
+              maxValue={120}
             />
           </div>
           <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` }}>
@@ -596,7 +624,7 @@ export default function Detail() {
                   },
                   {
                     limit: 150,
-                    color: '#F5CD19',
+                    color: '#b9dd2d',
                     showTick: true,
                     tooltip: {
                       text: 'Nồng độ vừa',
@@ -661,7 +689,7 @@ export default function Detail() {
                 // gradient: true,
                 subArcs: [
                   {
-                    limit: 0.25,
+                    limit: 200,
                     color: '#5BE12C',
                     showTick: true,
                     tooltip: {
@@ -669,15 +697,15 @@ export default function Detail() {
                     },
                   },
                   {
-                    limit: 0.5,
+                    limit: 400,
                     color: '#F5CD19',
                     showTick: true,
                     tooltip: {
-                      text: 'Nồng độ vừa',
+                      text: 'Nồng độ tốt',
                     },
                   },
                   {
-                    limit: 1,
+                    limit: 800,
                     color: '#F5CD19',
                     showTick: true,
                     tooltip: {
@@ -719,7 +747,7 @@ export default function Detail() {
               }}
               value={data.component.nh3}
               minValue={0}
-              maxValue={1.5}
+              maxValue={1200}
             />
           </div>
         </div>
