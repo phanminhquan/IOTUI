@@ -1,164 +1,143 @@
-import cookie from "react-cookies";
+import cookie from 'react-cookies';
 import { useTheme } from '@mui/material/styles';
 import GaugeComponent from 'react-gauge-component';
-import { Row } from 'react-bootstrap';
+import { Row, Table } from 'react-bootstrap';
 import React, { Component, useContext, useEffect, useState } from 'react';
 import CanvasJSReact from '@canvasjs/react-charts';
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { format } from "date-fns";
-import { toInteger } from "lodash";
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { format } from 'date-fns';
+import { toInteger } from 'lodash';
 import Iconify from '../components/iconify';
-import { setGlobalState, useGlobalState } from "..";
-import Expired from "./Expired";
-import Apis, { endpoints } from "../configs/Apis";
-import { MyUserContext } from "../App";
-
-
-
-
-
-
-
+import { setGlobalState, useGlobalState } from '..';
+import Expired from './Expired';
+import Apis, { endpoints } from '../configs/Apis';
+import { MyUserContext } from '../App';
 
 const CanvasJS = CanvasJSReact.CanvasJS;
 const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 export default function Detail() {
-
   const [user, dispatch] = useContext(MyUserContext);
 
   const path = useParams();
   const [data, setData] = useState();
   const [dataCo, setDataCo] = useState([]);
-  const listener = useGlobalState("message")[0];
+  const [minCo, setMinCo] = useState();
+  const [maxCo, setMaxCo] = useState();
+  const listener = useGlobalState('message')[0];
   useEffect(() => {
     const loaddata = async () => {
       const res = await Apis.get(`${endpoints.current_data}/${path.id}`, {
         headers: {
-          Authorization: `Bearer ${cookie.load("token")}`,
+          Authorization: `Bearer ${cookie.load('token')}`,
         },
-      }
-      )
+      });
       if (res.data === '') {
-        setGlobalState("isAuthorized", false)
-      }
-      else {
+        setGlobalState('isAuthorized', false);
+      } else {
         setData(res.data);
       }
-    }
+    };
 
     const dataHistory = async () => {
       const res = await Apis.get(`${endpoints.historyOFStation}/${path.id}`, {
         headers: {
-          Authorization: `Bearer ${cookie.load("token")}`,
+          Authorization: `Bearer ${cookie.load('token')}`,
         },
-      })
+      });
       if (res.data === '') {
-        setGlobalState("isAuthorized", false)
-      }
-      else {
-        const responese = []
+        setGlobalState('isAuthorized', false);
+      } else {
+        const responese = [];
 
-        const data2 =[]
-        res.data.forEach(element => {
-          responese.push({ x: new Date(toInteger(element.dt)*1000), y: element.component.co })
+        const data2 = [];
+        res.data.forEach((element) => {
+          responese.push({ x: new Date(toInteger(element.dt) * 1000), y: element.component.co });
         });
-        setDataCo(responese)
-
-
-
+        setDataCo(responese);
       }
-    }
+    };
+    const dataMaxCo = async () => {
+      const res = await Apis.get(`${endpoints.maxCo}/${path.id}`, {
+        headers: {
+          Authorization: `Bearer ${cookie.load('token')}`,
+        },
+      });
+      if (res.data === '') {
+        setGlobalState('isAuthorized', false);
+      } else {
+        setMaxCo(res.data);
+      }
+    };
+    const dataMinCo = async () => {
+      const res = await Apis.get(`${endpoints.minCo}/${path.id}`, {
+        headers: {
+          Authorization: `Bearer ${cookie.load('token')}`,
+        },
+      });
+      if (res.data === '') {
+        setGlobalState('isAuthorized', false);
+      } else {
+        setMinCo(res.data);
+      }
+    };
+    dataMaxCo();
+    dataMinCo();
     loaddata();
     dataHistory();
-
   }, [listener]);
   const options = {
     animationEnabled: true,
-    theme: "light2",
+    theme: 'light2',
     title: {
-      text: "Dữ liệu CO trong 1 giờ qua"
+      text: 'Dữ liệu CO trong 1 giờ qua',
     },
     axisX: {
-      valueFormatString: "DD/MM/YYYY HH:mm:ss",
+      valueFormatString: 'DD/MM/YYYY HH:mm:ss',
       crosshair: {
         enabled: true,
-        snapToDataPoint: true
-      }
+        snapToDataPoint: true,
+      },
     },
     axisY: {
-      title: "µg/m³",
+      title: 'µg/m³',
       includeZero: true,
       crosshair: {
-        enabled: true
-      }
+        enabled: true,
+      },
     },
     toolTip: {
-      shared: true
+      shared: true,
     },
     legend: {
-      cursor: "pointer",
-      verticalAlign: "bottom",
-      horizontalAlign: "left",
+      cursor: 'pointer',
+      verticalAlign: 'bottom',
+      horizontalAlign: 'left',
       dockInsidePlotArea: true,
-
     },
     data: [
       {
-        type: "line",
+        type: 'line',
         showInLegend: true,
-        name: "CO",
-        markerType: "square",
-        xValueFormatString: "DD/MM/YYYY HH:mm:ss",
-        color: "#F08080",
+        name: 'CO',
+        markerType: 'square',
+        xValueFormatString: 'DD/MM/YYYY HH:mm:ss',
+        color: '#F08080',
         dataPoints: dataCo,
       },
     ],
   };
-  const option1 = {
-    theme: 'light1',
-    animationEnabled: true,
-    exportEnabled: true,
-    title: {
-      text: '',
-    },
-    axisY: {
-      title: 'Nhiệt độ',
-      suffix: ' °C',
-    },
-    axisX: {
-      title: 'Giờ trong ngày',
-      prefix: '',
-      interval: 1,
-    },
-    data: [
-      {
-        type: 'rangeArea',
-        xValueFormatString: '',
-        yValueFormatString: '#0.## °C',
-        toolTipContent: ' <span style="color:#6D78AD">{x}</span><br><b>Min:</b> {y[0]}<br><b>Max:</b> {y[1]}',
-        dataPoints: [
-          { x: 1, y: [37, 55] },
-          { x: 2, y: [37, 57] },
-          { x: 3, y: [43, 63] },
-          { x: 4, y: [46, 68] },
-          { x: 5, y: [55, 75] },
-          { x: 6, y: [63, 84] },
-          { x: 7, y: [66, 90] },
-        ]
-      },
-    ],
-  };
-  const isAuthorized = useGlobalState("isAuthorized")[0]
+  const isAuthorized = useGlobalState('isAuthorized')[0];
   if (isAuthorized === false || data == null || user == null) {
-    return (<>
-      <Expired />
-    </>)
+    return (
+      <>
+        <Expired />
+      </>
+    );
   }
   return (
     <>
       <div className="container">
-        
         <div className="Row" style={{ display: 'flex' }}>
           <div style={{ width: `calc(100% / ${2})`, height: `calc(100% / ${2})` }}>
             {' '}
@@ -387,7 +366,7 @@ export default function Detail() {
                 // gradient: true,
                 subArcs: [
                   {
-                    limit:50,
+                    limit: 50,
                     color: '#5BE12C',
                     showTick: true,
                     tooltip: {
@@ -755,11 +734,30 @@ export default function Detail() {
       <div style={{ width: `calc(100% / ${1})`, height: 50 }}> </div>
       <div className="container">
         <div className="Row" style={{ display: 'flex' }}>
-          <div style={{ width: `calc(100% / ${2})` }}>
+          <div style={{ width: `calc(100% / ${1.1})` }}>
             <CanvasJSChart options={options} />
           </div>
-          <div style={{ width: `calc(100% / ${2})` }}>
-            <CanvasJSChart options={option1} />
+          <div
+            style={{ width: `calc(100% / ${1.3})`, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+          >
+            <div>
+              <Table striped bordered hover border={1}>
+                <thead>
+                  <tr>
+                    <th style={{ padding: '0px 20px 0px 20px', textAlign: 'center' }}>Name</th>
+                    <th style={{ padding: '0px 20px 0px 20px', textAlign: 'center' }}>Min </th>
+                    <th style={{ padding: '0px 20px 0px 20px', textAlign: 'center' }}>Max </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>CO</td>
+                    <td>{minCo} µg/m³</td>
+                    <td>{maxCo} µg/m³</td>
+                  </tr>
+                </tbody>
+              </Table>
+            </div>
           </div>
         </div>
       </div>
