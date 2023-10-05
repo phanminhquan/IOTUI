@@ -14,6 +14,7 @@ export const endpoints = {
   allStation: '/api/all-staion',
   minCo: '/api/minCO',
   maxCo: '/api/maxCO',
+  station: '/api/datastation',
 };
 export const authApi = () => {
   return axios.create({

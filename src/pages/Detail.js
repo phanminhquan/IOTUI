@@ -734,24 +734,28 @@ export default function Detail() {
       <div style={{ width: `calc(100% / ${1})`, height: 50 }}> </div>
       <div className="container">
         <div className="Row" style={{ display: 'flex' }}>
-          <div style={{ width: `calc(100% / ${1.1})` }}>
+          <div style={{ width: `calc(100% / ${1})` }}>
             <CanvasJSChart options={options} />
           </div>
           <div
-            style={{ width: `calc(100% / ${1.3})`, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+            style={{
+              width: `calc(79%)`,
+              display: 'flex',
+              justifyContent: 'end',
+              alignItems: 'end',
+              position: 'absolute',
+            }}
           >
             <div>
               <Table striped bordered hover border={1}>
                 <thead>
                   <tr>
-                    <th style={{ padding: '0px 20px 0px 20px', textAlign: 'center' }}>Name</th>
                     <th style={{ padding: '0px 20px 0px 20px', textAlign: 'center' }}>Min </th>
                     <th style={{ padding: '0px 20px 0px 20px', textAlign: 'center' }}>Max </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td>CO</td>
                     <td>{minCo} µg/m³</td>
                     <td>{maxCo} µg/m³</td>
                   </tr>
