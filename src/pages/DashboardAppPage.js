@@ -166,7 +166,7 @@ export default function DashboardAppPage() {
   };
 
   if (user == null) return <Navigate to="/login" />;
-  if (isAuthorized === false || data == null || user == null) {
+  if (isAuthorized === false || user == null) {
     return (
       <>
         <Expired />
@@ -218,6 +218,8 @@ export default function DashboardAppPage() {
       },
     ],
   };
+  if(data == null)
+  return(<></>)
   return (
     <>
       <Helmet>

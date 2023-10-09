@@ -128,13 +128,14 @@ export default function Detail() {
     ],
   };
   const isAuthorized = useGlobalState('isAuthorized')[0];
-  if (isAuthorized === false || data == null || user == null) {
+  if (isAuthorized === false || user == null) {
     return (
       <>
         <Expired />
       </>
     );
   }
+  if(data == null) return (<></>)
   return (
     <>
       <div className="container">

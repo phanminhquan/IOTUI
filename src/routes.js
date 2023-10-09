@@ -10,6 +10,7 @@ import Detail from './pages/Detail';
 import DashboardLayout from './layouts/DashboardLayout';
 import SimpleLayout from './layouts/SimpleLayout';
 import NotFound from './pages/NotFound';
+import Register from './pages/Register';
 
 // ----------------------------------------------------------------------
 
@@ -23,7 +24,9 @@ Router() {
         { element: <Navigate to="/login" />, index: true },
         { path: 'app', element: <DashboardAppPage /> },
         { path: 'user', element: <UserPage /> },
-        {path :"info/:id", element: <Detail/>}
+        {path :"info/:id", element: <Detail/>},
+        {path :"register", element: <Register/>}
+
         
       ],
     },
@@ -40,6 +43,10 @@ Router() {
     {
       path: '*',
       element: <Navigate to="/404" replace />,
+    },
+    {
+      path: '/register',
+      element: <Register />,
     },
     {
       path: '/404',

@@ -15,6 +15,9 @@ export const endpoints = {
   minCo: '/api/minCO',
   maxCo: '/api/maxCO',
   station: '/api/datastation',
+  checkemail: "/checkusername/",
+  generateOTP :"/generateOtp",
+  validateOTP:'/validateOtp'
 };
 export const authApi = () => {
   return axios.create({
@@ -24,6 +27,7 @@ export const authApi = () => {
     },
   });
 };
+
 
 export default axios.create({
   baseURL: SERVER,
