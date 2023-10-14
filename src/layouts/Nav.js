@@ -52,11 +52,6 @@ export default function Nav({ openNav, onCloseNav }) {
       title: 'dashboard',
       path: '/dashboard/app',
       icon: icon('ic_analytics'),
-    },
-    {
-      title: 'user',
-      path: '/dashboard/user',
-      icon: icon('ic_user'),
     }
 
 
